@@ -1,0 +1,6 @@
+@ittask4_HostAddress = http://localhost:5110
+
+GET {{ittask4_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
