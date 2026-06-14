@@ -1,4 +1,4 @@
-import "@mantine/core/styles.css";
+
 import {
   isRouteErrorResponse,
   Links,
@@ -14,11 +14,13 @@ import {
   createTheme,
   mantineHtmlProps,
 } from "@mantine/core";
+import { Notifications } from '@mantine/notifications';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
 import type { Route } from "./+types/root";
-import "./app.css";
 import { AuthProvider } from "./auth/AuthProvider";
+import "@mantine/core/styles.css";
+import '@mantine/notifications/styles.css';
+
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -51,7 +53,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <MantineProvider theme={theme}>{children}</MantineProvider>
+        <MantineProvider theme={theme}>
+          <Notifications />
+          {children}
+        </MantineProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

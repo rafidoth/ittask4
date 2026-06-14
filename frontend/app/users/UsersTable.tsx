@@ -1,53 +1,50 @@
 import { TableSelection } from "./TableSelection";
 
-import { Container } from "@mantine/core";
+import { Container, Stack, Loader } from "@mantine/core";
 import { useState } from "react";
-import { UserStatus, type User } from "../types";
 import { UsersTableToolBar } from "./TableToolbar";
-
-const userData: User[] = [
-  {
-    id: "1",
-    name: "Robert Wolfkisser",
-    organizational_affiliation: "Architect, Meta Platforms, Inc",
-    email: "rob_wolf@gmail.com",
-    status: UserStatus.Unverified,
-    last_seen: "5 minutes ago",
-  },
-  {
-    id: "2",
-    name: "Jill Jailbreaker",
-    organizational_affiliation: "Senior Engineer, Stripe",
-    email: "jill.jailbreaker@stripe.com",
-    status: UserStatus.Unverified,
-    last_seen: "12 minutes ago",
-  },
-  {
-    id: "3",
-    name: "Henry Silkeater",
-    organizational_affiliation: "Product Designer, Figma",
-    email: "henry.silkeater@figma.com",
-    status: UserStatus.Unverified,
-    last_seen: "1 hour ago",
-  },
-  {
-    id: "4",
-    name: "Bill Horsefighter",
-    organizational_affiliation: "Engineering Manager, Atlassian",
-    email: "bill.horsefighter@atlassian.com",
-    status: UserStatus.Blocked,
-    last_seen: "2 days ago",
-  },
-];
+import { getUsers } from "~/api";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "~/auth/AuthProvider";
+import { redirect } from "react-router";
+import { notifications } from "@mantine/notifications";
+import axios from "axios";
 
 export function UsersTable() {
-  const [data, setData] = useState<User[]>(userData);
+  const { user, logout } = useAuth();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const { data, isLoading, error, isError } = useQuery({
+    queryKey: ["users"],
+    queryFn: () => getUsers(user?.id || ""),
+  });
+  console.log(user);
+
+  if (isError) {
+    if (axios.isAxiosError(error)) {
+      const statusCode = error.response?.status;
+      if (statusCode === 403) {
+        logout();
+        notifications.show({
+          title: "Session Expired",
+          message: "Your session has expired. Please log in again.",
+          color: "red",
+        })
+        redirect("/login");
+      }
+    };
+  }
+
+  if (isLoading) {
+    return <Stack align="center" justify="center" style={{ height: "100vh" }}>
+      <Loader size="md" variant="dots" />
+    </Stack>;
+  }
+
   return (
     <Container strategy="grid">
-      <UsersTableToolBar selectedIds={selectedIds} data={data} />
+      <UsersTableToolBar selectedIds={selectedIds} data={data?.users || []} />
       <TableSelection
-        data={data}
+        data={data?.users || []}
         selectedIds={selectedIds}
         setSelection={setSelectedIds}
       />

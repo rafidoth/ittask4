@@ -14,7 +14,6 @@ export function meta({ }: Route.MetaArgs) {
 
 export default function Home() {
   const { isAuthenticated, isLoading } = useAuth();
-  console.log("Home: isAuthenticated =", isAuthenticated, "isLoading =", isLoading);
   const navigate = useNavigate();
 
   useEffect(() => {

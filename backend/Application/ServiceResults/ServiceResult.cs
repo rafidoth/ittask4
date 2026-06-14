@@ -7,11 +7,11 @@ namespace ittask4.Application.ServiceResults
         public T? Data { get; set; }
         public string? ErrorCode { get; set; }
 
-        public static ServiceResult<T> Success(T data, string message)
+        public static ServiceResult<T> Success(T data, string? message)
         {
             return new ServiceResult<T>() { IsSuccess = true, Data = data, Message = message };
         }
-        public static ServiceResult<T> Failure(string message, string errorCode)
+        public static ServiceResult<T> Failure(string? message, string? errorCode)
         {
             return new ServiceResult<T>() { IsSuccess = false, Message = message, ErrorCode = errorCode };
         }

@@ -7,10 +7,12 @@ export enum UserStatus {
 export type User = {
   id: string;
   name: string;
-  organizational_affiliation: string;
+  organization_Affiliation?: string;
   email: string;
   status?: UserStatus;
   last_seen?: string;
+  last_activities?: string[];
+  createdAt?: Date;
 };
 
 export type UserLoginRequest = {
@@ -24,4 +26,15 @@ export type UserLoginResponse = {
   name: string;
   email: string;
   organization_Affiliation?: string;
+};
+
+export type GetUsersResponse = {
+  success: boolean;
+  users: User[];
+};
+
+
+export type UserActionResponse = {
+  success: boolean;
+  message: string;
 };

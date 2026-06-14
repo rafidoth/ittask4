@@ -1,12 +1,12 @@
 import cx from "clsx";
-import { Checkbox, Group, ScrollArea, Table, Text } from "@mantine/core";
+import { Checkbox, Stack, ScrollArea, Table, Text } from "@mantine/core";
 import classes from "./TableSelection.module.css";
 import type { User } from "../types";
 
 const tableHeads = ["Name", "Email", "Status", "Last Seen"];
 
 type TableSelectionProps = {
-  data?: User[];
+  data: User[];
   selectedIds: string[];
   setSelection: React.Dispatch<React.SetStateAction<string[]>>;
 };
@@ -19,12 +19,14 @@ export function TableSelection({
   if (!data) {
     return null;
   }
+  console.log(data)
   const toggleRow = (id: string) =>
     setSelection((current) =>
       current.includes(id)
         ? current.filter((item) => item !== id)
         : [...current, id],
     );
+
   const toggleAll = () =>
     setSelection((current) =>
       current.length === data.length ? [] : data.map((item) => item.id),
@@ -45,15 +47,18 @@ export function TableSelection({
           />
         </Table.Td>
         <Table.Td>
-          <Group gap="sm">
-            <Text size="sm" fw={500}>
+          <Stack gap="sm">
+            <Text size="md" fw={500}>
               {item.name}
             </Text>
-          </Group>
+            <Text size="sm" fw={300}>
+              {item.organization_Affiliation || "N/A"}
+            </Text>
+          </Stack>
         </Table.Td>
-        <Table.Td>{item.email}</Table.Td>
-        <Table.Td>{item.status}</Table.Td>
-        <Table.Td>{item.last_seen}</Table.Td>
+        <Table.Td><Text size="md">{item.email}</Text></Table.Td>
+        <Table.Td><Text size="md">{item.status}</Text></Table.Td>
+        <Table.Td><Text size="md">{item.last_seen}</Text></Table.Td>
       </Table.Tr>
     );
   });

@@ -36,5 +36,40 @@ namespace ittask4.Application.Dto
         public string? Organization_Affiliation { get; set; }
     }
 
+    public class UserRequestDto
+    {
+        public required string UserId { get; set; }
+    }
+
+    public class UserDto
+    {
+        public required string Id { get; set; }
+        public required string Name { get; set; }
+        public required string Email { get; set; }
+        public string? Organization_Affiliation { get; set; }
+        public required string Status { get; set; }
+        public List<Activity>? LastActivities { get; set; }
+        public DateTime? LastLogin { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+
+    public class UserListResponseDto
+    {
+        public required bool Success { get; set; }
+        public List<UserDto>? Users { get; set; }
+    }
+
+    public class UserActionRequestDto
+    {
+        public required List<string> TargetUserIds { get; set; }
+    }
+
+    public class UserActionResponseDto
+    {
+        public required bool Success { get; set; }
+        public string? Message { get; set; }
+    }
+
+
 
 }
