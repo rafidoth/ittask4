@@ -17,6 +17,7 @@ builder.Services.AddCors(options =>
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("PG")));
 builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<ValidateUserFilter>();
 builder.Services.AddControllers();
 
 // openapi doc
