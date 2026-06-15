@@ -20,6 +20,7 @@ import type { Route } from "./+types/root";
 import { AuthProvider } from "./auth/AuthProvider";
 import "@mantine/core/styles.css";
 import '@mantine/notifications/styles.css';
+import ActivityTrackingProvider from "./activity_tracking/ActivityTrackingProvider";
 
 
 export const links: Route.LinksFunction = () => [
@@ -53,24 +54,26 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <MantineProvider theme={theme}>
-          <Notifications />
-          {children}
-        </MantineProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <MantineProvider theme={theme}>
+              <Notifications />
+              <ActivityTrackingProvider>
+                {children}
+              </ActivityTrackingProvider>
+            </MantineProvider>
+          </AuthProvider>
+        </QueryClientProvider>
+
         <ScrollRestoration />
         <Scripts />
       </body>
-    </html>
+    </html >
   );
 }
 export default function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Outlet />
-      </AuthProvider>
-    </QueryClientProvider>
-  );
+  return <Outlet />
+
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

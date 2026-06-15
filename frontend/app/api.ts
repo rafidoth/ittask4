@@ -30,3 +30,36 @@ export function deleteUsers(userIds: string[], userId: string): Promise<UserActi
   });
   return res.then((response) => response.data);
 }
+
+
+export function blockUsers(userIds: string[], userId: string): Promise<UserActionResponse> {
+  const res = axios.post(`${base_url}/users/block`, {
+    targetUserIds: userIds,
+  }, {
+    headers: {
+      "UserId": userId,
+    },
+  });
+  return res.then((response) => response.data);
+}
+
+export function unblockUsers(userIds: string[], userId: string): Promise<UserActionResponse> {
+  const res = axios.post(`${base_url}/users/unblock`, {
+    targetUserIds: userIds,
+  }, {
+    headers: {
+      "UserId": userId,
+    },
+  });
+  return res.then((response) => response.data);
+}
+
+export function pushActive(userId?: string): Promise<String> {
+  const res = axios.post(`${base_url}/users/active`, null, {
+    headers: {
+      "UserId": userId,
+    },
+  });
+  return res.then((res) => res.data)
+}
+

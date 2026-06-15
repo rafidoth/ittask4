@@ -23,14 +23,11 @@ public class ValidateUserFilter : ActionFilterAttribute
         if (result.IsSuccess)
         {
             await next();
-        }
-
-        if (string.IsNullOrEmpty(userId))
-        {
-            context.Result = new Microsoft.AspNetCore.Mvc.StatusCodeResult(403); // Forbidden
             return;
         }
 
-        await next();
+        context.Result = new Microsoft.AspNetCore.Mvc.StatusCodeResult(403); // Forbidden
+        return;
+
     }
 }

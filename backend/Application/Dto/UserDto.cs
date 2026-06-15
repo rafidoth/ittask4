@@ -48,7 +48,8 @@ namespace ittask4.Application.Dto
         public required string Email { get; set; }
         public string? Organization_Affiliation { get; set; }
         public required string Status { get; set; }
-        public List<Activity>? LastActivities { get; set; }
+        public Dictionary<DateOnly, int>? ActivitesInMinutes { get; set; }
+        public DateTime? LastSeen { get; set; }
         public DateTime? LastLogin { get; set; }
         public DateTime CreatedAt { get; set; }
     }

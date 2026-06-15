@@ -21,9 +21,7 @@ namespace ittask4.Data
             modelBuilder.Entity<User>().HasIndex(e => e.Email).IsUnique();
             modelBuilder.Entity<User>().Property(e => e.CreatedAt).HasDefaultValueSql("now()");
             modelBuilder.Entity<User>().Property(e => e.Status).HasDefaultValueSql(((int)UserStatus.Unverified).ToString());
-            modelBuilder.Entity<User>()
-                .ComplexCollection(u => u.LastActivities, d => d.ToJson());
-            // modelBuilder.Entity<User>().Property(e => e.LastActivities).HasDefaultValueSql("'[]'::jsonb");
+            modelBuilder.Entity<User>().Property(e => e.ActivitesInMinutes).HasColumnType("jsonb");
         }
     }
 }

@@ -24,7 +24,8 @@ namespace ittask4.Domain.Entities
         public required string Password { get; set; }
         public string? Organization_Affiliation { get; set; }
         public UserStatus Status { get; set; } = (int)UserStatus.Unverified;
-        public List<Activity>? LastActivities { get; set; }
+        public Dictionary<DateOnly, int>? ActivitesInMinutes { get; set; }
+        public DateTime? LastSeen { get; set; }
         public DateTime? LastLogin { get; set; }
         public DateTime CreatedAt { get; set; }
     }

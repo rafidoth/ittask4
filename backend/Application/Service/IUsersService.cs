@@ -9,6 +9,9 @@ namespace ittask4.Application.Service
         Task<ServiceResult<UserLoginResponseDto>> LoginUser(UserLoginRequestDto dto);
         Task<ServiceResult<UserActionResponseDto>> DeleteUser(UserActionRequestDto dto);
         Task<ServiceResult<UserListResponseDto>> GetAllUsers();
+        Task<ServiceResult<UserActionResponseDto>> BlockUser(UserActionRequestDto dto);
+        Task<ServiceResult<UserActionResponseDto>> UnblockUser(UserActionRequestDto dto);
+        Task<ServiceResult<string>> UpdateUserActivity(string UserId);
         Task<ServiceResult<bool>> ValidateUser(string userId);
     }
 }

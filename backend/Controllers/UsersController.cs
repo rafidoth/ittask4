@@ -35,6 +35,7 @@ public class UsersController : ControllerBase
                 return result.ErrorCode switch
                 {
                     "NOT_FOUND" => NotFound(result.Message),
+                    "BLOCKED" => StatusCode(StatusCodes.Status403Forbidden, result.Message),
                     "Unknown_Error" => BadRequest(result.Message),
                     _ => BadRequest(result.Message)
                 };
@@ -147,5 +148,80 @@ public class UsersController : ControllerBase
         {
             return BadRequest("An unexpected error occurred.");
         }
+    }
+
+    [HttpPost("block")]
+    [ServiceFilter<ValidateUserFilter>]
+    public async Task<IActionResult> BlockUser([FromBody] UserActionRequestDto request)
+    {
+        try
+        {
+            var result = await _usersService.BlockUser(request);
+            if (result == null)
+            {
+                return BadRequest("An error occurred while processing the request.");
+            }
+
+            if (result.IsSuccess)
+            {
+                return Ok(result.Data);
+            }
+            else
+            {
+                return result.ErrorCode switch
+                {
+                    "NOT_FOUND" => NotFound(result.Message),
+                    "USER_BLOCKED" => StatusCode(StatusCodes.Status403Forbidden, result.Message ?? "Sorry, blocked user can't perform this action."),
+                    "NO_TARGET_USERS" => BadRequest(result.Message),
+                    "INVALID_USER_ID" => BadRequest(result.Message),
+                    _ => BadRequest(result.Message)
+                };
+            }
+        }
+        catch (Exception)
+        {
+            return BadRequest("An unexpected error occurred.");
+        }
+    }
+
+    [HttpPost("unblock")]
+    [ServiceFilter<ValidateUserFilter>]
+    public async Task<IActionResult> UnblockUser([FromBody] UserActionRequestDto request)
+    {
+        try
+        {
+            var result = await _usersService.UnblockUser(request);
+            if (result == null)
+            {
+                return BadRequest("An error occurred while processing the request.");
+            }
+
+            if (result.IsSuccess)
+            {
+                return Ok(result.Data);
+            }
+            else
+            {
+                return result.ErrorCode switch
+                {
+                    "NOT_FOUND" => NotFound(result.Message),
+                    "NO_TARGET_USERS" => BadRequest(result.Message),
+                    "INVALID_USER_ID" => BadRequest(result.Message),
+                    _ => BadRequest(result.Message)
+                };
+            }
+        }
+        catch (Exception)
+        {
+            return BadRequest("An unexpected error occurred.");
+        }
+    }
+
+    [HttpPost("active")]
+    [ServiceFilter<ValidateUserFilter>]
+    public async Task<IActionResult> UserActive([FromHeader] string UserId)
+    {
+        var result = await _usersService.UpdateUserActivity(UserId);
+        return Ok(result.Message);
     }
 }

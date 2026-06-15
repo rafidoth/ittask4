@@ -10,14 +10,15 @@ import { redirect } from "react-router";
 import { notifications } from "@mantine/notifications";
 import axios from "axios";
 
+
 export function UsersTable() {
   const { user, logout } = useAuth();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const { data, isLoading, error, isError } = useQuery({
     queryKey: ["users"],
     queryFn: () => getUsers(user?.id || ""),
+    retry: 2
   });
-  console.log(user);
 
   if (isError) {
     if (axios.isAxiosError(error)) {

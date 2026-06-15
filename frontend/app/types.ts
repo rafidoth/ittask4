@@ -1,7 +1,7 @@
 export enum UserStatus {
-  Unverified = "unverfied",
-  Blocked = "blocked",
-  Active = "active",
+  Unverified = "Unverfied",
+  Blocked = "Blocked",
+  Active = "Active",
 }
 
 export type User = {
@@ -10,8 +10,9 @@ export type User = {
   organization_Affiliation?: string;
   email: string;
   status?: UserStatus;
-  last_seen?: string;
-  last_activities?: string[];
+  activitesInMinutes?: { [date: string]: number };
+  lastSeen?: string;
+  lastLogin?: string;
   createdAt?: Date;
 };
 

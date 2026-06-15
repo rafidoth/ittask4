@@ -13,7 +13,7 @@ import {
   Title,
 } from "@mantine/core";
 import { useMutation } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import { AxiosError, isAxiosError } from "axios";
 import { useState } from "react";
 import classes from "./login.module.css";
 import { useViewportSize } from "@mantine/hooks";
@@ -41,7 +41,7 @@ export default function Login() {
         id: userData.userId,
         name: userData.name,
         email: userData.email,
-        organizational_affiliation: organizationAffiliation ?? "",
+        organization_Affiliation: organizationAffiliation ?? "",
       });
 
       navigate("/");
