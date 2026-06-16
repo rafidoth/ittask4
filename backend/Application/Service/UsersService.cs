@@ -112,6 +112,7 @@ namespace ittask4.Application.Service
                     Organization_Affiliation = u.Organization_Affiliation,
                     LastSeen = u.LastSeen,
                     ActivitesInMinutes = u.ActivitesInMinutes,
+                    LastLogin = u.LastLogin,
                     Status = u.Status.ToString(),
                     CreatedAt = u.CreatedAt
                 }).ToList();
