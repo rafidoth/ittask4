@@ -14,10 +14,11 @@ import axios from "axios";
 export function UsersTable() {
   const { user, logout } = useAuth();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [filter, setFilter] = useState("");
   const { data, isLoading, error, isError } = useQuery({
     queryKey: ["users"],
     queryFn: () => getUsers(user?.id || ""),
-    retry: 2
+    retry: false
   });
 
   if (isError) {
@@ -25,9 +26,13 @@ export function UsersTable() {
       const statusCode = error.response?.status;
       if (statusCode === 403) {
         logout();
+        let errorMsg = "Your session has expired. Please log in again.";
+        if (error.response) {
+          errorMsg = error.response.data.message;
+        }
         notifications.show({
           title: "Session Expired",
-          message: "Your session has expired. Please log in again.",
+          message: errorMsg,
           color: "red",
         })
         redirect("/login");
@@ -43,11 +48,17 @@ export function UsersTable() {
 
   return (
     <Container strategy="grid">
-      <UsersTableToolBar selectedIds={selectedIds} data={data?.users || []} />
+      <UsersTableToolBar
+        selectedIds={selectedIds}
+        data={data?.users || []}
+        filter={filter}
+        setFilter={setFilter}
+      />
       <TableSelection
         data={data?.users || []}
         selectedIds={selectedIds}
         setSelection={setSelectedIds}
+        filter={filter}
       />
     </Container>
   );

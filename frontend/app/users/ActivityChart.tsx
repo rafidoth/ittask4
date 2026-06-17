@@ -1,5 +1,5 @@
 import { BarChart } from "@mantine/charts";
-import { Paper, Text } from "@mantine/core";
+import { Box, Paper, Text } from "@mantine/core";
 import { intervalToDuration, format, formatDuration } from "date-fns";
 
 interface ChartTooltipProps {
@@ -13,8 +13,8 @@ function ChartTooltip({ label, payload }: ChartTooltipProps) {
     const duration = intervalToDuration({ start: 0, end: mins * 60 * 1000 })
     const timeMsg = formatDuration(duration, { format: ["hours", "minutes"] })
     return (
-        <Paper px="xs" py="xs" shadow="md">
-            <Text fw={600}>
+        <Paper px="xs" py="xs" shadow="xl" w={100}>
+            <Text fw={600} size="xs">
                 {timeMsg || "0 minute"} • {label}
             </Text>
         </Paper>
@@ -27,19 +27,21 @@ type ChartDataType = {
 }
 
 export function ActivityChart({ data }: { data: ChartDataType[] }) {
-    return <BarChart
-        h={60}
-        data={data}
-        dataKey="date"
-        series={[{ name: 'activity', color: 'blue.2' }]}
-        gridAxis="none"
-        tickLine="none"
-        withXAxis={false}
-        withYAxis={false}
-        tooltipProps={{
-            cursor: false,
-            content: ({ label, payload }) => <ChartTooltip label={label} payload={payload} />,
-        }}
-        minBarSize={5}
-    />
+    return <Box
+        w={200}
+    ><BarChart
+            h={50}
+            data={data}
+            dataKey="date"
+            series={[{ name: 'activity', color: 'blue.5' }]}
+            gridAxis="none"
+            tickLine="none"
+            withXAxis={false}
+            withYAxis={false}
+            tooltipProps={{
+                cursor: false,
+                content: ({ label, payload }) => <ChartTooltip label={label} payload={payload} />,
+            }}
+            minBarSize={5}
+        /></Box>
 }

@@ -3,17 +3,20 @@ using ittask4.Domain.Entities;
 using ittask4.Data;
 using Microsoft.EntityFrameworkCore;
 using ittask4.Application.ServiceResults;
-using System.Threading.Tasks.Dataflow;
 
 namespace ittask4.Application.Service
 {
     public class UsersService : IUsersService
     {
         private readonly ApplicationDbContext _ctx;
+        private readonly IEmailService _emailService;
+        private readonly IHttpContextAccessor _httpCtx;
 
-        public UsersService(ApplicationDbContext dbContext)
+        public UsersService(ApplicationDbContext dbContext, IEmailService emailService, IHttpContextAccessor httpCtx)
         {
             _ctx = dbContext;
+            _emailService = emailService;
+            _httpCtx = httpCtx;
         }
 
         public async Task<ServiceResult<bool>> ValidateUser(string userId)
@@ -21,12 +24,12 @@ namespace ittask4.Application.Service
             var user = await _ctx.Users.FindAsync(Guid.Parse(userId));
             if (user == null)
             {
-                return ServiceResult<bool>.Failure("Invalid User ID.", "NOT_FOUND");
+                return ServiceResult<bool>.Failure("User doesn't exist.", "NOT_FOUND");
             }
 
             if (user.Status == UserStatus.Blocked)
             {
-                return ServiceResult<bool>.Failure("Sorry, blocked user can't perform this action.", "USER_BLOCKED");
+                return ServiceResult<bool>.Failure("You're blocked user. ", "USER_BLOCKED");
             }
 
             return ServiceResult<bool>.Success(true, "User exists.");
@@ -51,12 +54,28 @@ namespace ittask4.Application.Service
                 };
 
                 await _ctx.Users.AddAsync(user);
-                await _ctx.SaveChangesAsync();
+                int rowInserted = await _ctx.SaveChangesAsync();
+                if (rowInserted == 1)
+                {
+                    try
+                    {
+                        var request = _httpCtx.HttpContext!.Request!;
+                        var baseUrl = $"{request.Scheme}://{request.Host}";
+                        var verificationLink = $"{baseUrl}/confirm?u={user.Id}";
+                        await _emailService.SendEmailAsync(user.Email, "Verify your email | ITTASK4", verificationLink);
+                    }
+                    catch (Exception e)
+                    {
+                        ServiceResult<UserRegisterResponseDto>.Failure(e.Message, "EMAIL_FAIL");
+                    }
+                }
+
                 return ServiceResult<UserRegisterResponseDto>.Success(
                         new UserRegisterResponseDto()
                         {
-                            UserId = user.Id.ToString(),
-                            Success = true
+                            Success = true,
+                            Name = user.Name,
+                            Email = user.Email
                         }
                         , "User registered successfully.");
 
@@ -354,6 +373,21 @@ namespace ittask4.Application.Service
             return ServiceResult<string>.Success("", $"{user.Name} acitivity updated");
         }
 
-
+        public async Task<ServiceResult<bool>> ActivateUser(string UserId)
+        {
+            try
+            {
+                await _ctx.Users
+                .Where(u => u.Id.ToString() == UserId)
+                .ExecuteUpdateAsync(
+                        setters => setters.SetProperty(u => u.Status, UserStatus.Active)
+                    );
+            }
+            catch (Exception e)
+            {
+                return ServiceResult<bool>.Failure(e.Message, "ACTIVATION_FAILED");
+            }
+            return ServiceResult<bool>.Success(true, "Activation Success!");
+        }
     }
 }

@@ -9,10 +9,12 @@ namespace ittask4.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IUsersService _usersService;
+    private readonly IEmailService _emailService;
 
-    public UsersController(IUsersService usersService)
+    public UsersController(IUsersService usersService, IEmailService emailService)
     {
         _usersService = usersService;
+        _emailService = emailService;
     }
 
     [HttpPost("login")]
@@ -50,7 +52,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Login([FromBody] UserRegisterRequestDto userDto)
+    public async Task<IActionResult> Register([FromBody] UserRegisterRequestDto userDto)
     {
         try
         {
@@ -62,7 +64,7 @@ public class UsersController : ControllerBase
 
             if (result.IsSuccess)
             {
-                return Ok(result.Data);
+                return Accepted(result.Data);
             }
             else
             {
@@ -224,4 +226,46 @@ public class UsersController : ControllerBase
         var result = await _usersService.UpdateUserActivity(UserId);
         return Ok(result.Message);
     }
+
+    [HttpGet("confirm")]
+    public async Task<IActionResult> VerifyEmail(string u)
+    {
+        if (string.IsNullOrEmpty(u))
+        {
+            return BadRequest("User identifier is required.");
+        }
+
+        var result = await _usersService.ValidateUser(u);
+        if (!result.IsSuccess)
+        {
+            return BadRequest(result.Message ?? "Validation failed.");
+        }
+
+        var activated = await _usersService.ActivateUser(u);
+        if (!activated.IsSuccess)
+        {
+            return StatusCode(500, "Activation could not be completed.");
+        }
+
+        string htmlResponse = @"
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Email Verified</title>
+            <style>
+                body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+            </style>
+        </head>
+        <body>
+            <h2>Verification Successful!</h2>
+            <p>Your email has been verified. You can safely close this tab and return to the app.</p>
+            <script>
+                window.close();
+            </script>
+        </body>
+        </html>";
+
+        return Content(htmlResponse, "text/html");
+    }
+
 }

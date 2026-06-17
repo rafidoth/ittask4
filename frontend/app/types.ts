@@ -39,3 +39,16 @@ export type UserActionResponse = {
   success: boolean;
   message: string;
 };
+
+export type UserRegisterRequest = {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  organization_Affiliation?: string;
+};
+
+export type UserRegisterResponse = {
+  success: boolean;
+  userId: string;
+};

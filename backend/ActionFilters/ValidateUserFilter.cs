@@ -1,4 +1,6 @@
 using ittask4.Application.Service;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 public class ValidateUserFilter : ActionFilterAttribute
@@ -26,8 +28,10 @@ public class ValidateUserFilter : ActionFilterAttribute
             return;
         }
 
-        context.Result = new Microsoft.AspNetCore.Mvc.StatusCodeResult(403); // Forbidden
+        context.Result = new ObjectResult(new { Message = result.Message })
+        {
+            StatusCode = StatusCodes.Status403Forbidden
+        };
         return;
-
     }
 }

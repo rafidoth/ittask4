@@ -7,20 +7,19 @@ import {
 } from "@phosphor-icons/react";
 import { UserStatus, type User, type UserActionResponse } from "../types";
 import { ActionIcon } from "@mantine/core";
-import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query";
-import { redirect } from "react-router";
+import { QueryClient, useMutation, useQueryClient, } from "@tanstack/react-query";
 import { useAuth } from "~/auth/AuthProvider";
 import { blockUsers, deleteUsers, unblockUsers } from "~/api";
 import { notifications } from "@mantine/notifications";
-import { useState } from "react";
-import { setDate } from "date-fns";
+import type { Dispatch, SetStateAction } from "react";
 
 type MutationFnType = {
   actionName: string,
   actorUserId: string,
+  queryClient: QueryClient
 }
 
-function useMutationFactory({ actionName, actorUserId }: MutationFnType) {
+function useMutationFactory({ actionName, actorUserId, queryClient }: MutationFnType) {
   let fn;
   switch (actionName) {
     case "delete":
@@ -40,6 +39,9 @@ function useMutationFactory({ actionName, actorUserId }: MutationFnType) {
   return useMutation({
     mutationFn: (userIds: string[]) => fn(userIds, actorUserId || ""),
     onSuccess: (response: UserActionResponse) => {
+      queryClient.invalidateQueries({
+        queryKey: ["users"]
+      });
       notifications.show({
         title: "Success",
         message: response.message,
@@ -59,27 +61,35 @@ function useMutationFactory({ actionName, actorUserId }: MutationFnType) {
 type UsersTableToolBarProps = {
   selectedIds: string[];
   data: User[];
+  filter: string,
+  setFilter: Dispatch<SetStateAction<string>>;
 };
 
 export function UsersTableToolBar({
   selectedIds,
   data,
+  filter,
+  setFilter
 }: UsersTableToolBarProps) {
   const { user } = useAuth();
+  const queryClient = useQueryClient()
 
   const deleteMutation = useMutationFactory({
     actionName: "delete",
-    actorUserId: user?.id || ""
+    actorUserId: user?.id || "",
+    queryClient: queryClient
   })
 
   const blockMutation = useMutationFactory({
     actionName: "block",
-    actorUserId: user?.id || ""
-  })
+    actorUserId: user?.id || "",
+    queryClient: queryClient
 
+  })
   const unblockMutation = useMutationFactory({
     actionName: "unblock",
-    actorUserId: user?.id || ""
+    actorUserId: user?.id || "",
+    queryClient: queryClient
   })
 
   const TOOLBAR_ICON_SIZE = 16;
@@ -131,6 +141,8 @@ export function UsersTableToolBar({
       </Flex>
       <Input
         placeholder="Filter"
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
       />
     </Flex>
   );

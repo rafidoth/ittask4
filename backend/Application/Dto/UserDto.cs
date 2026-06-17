@@ -10,8 +10,10 @@ namespace ittask4.Application.Dto
 
     public class UserRegisterResponseDto
     {
-        public string? UserId { get; set; }
+
         public required bool Success { get; set; }
+        public required string Name { get; set; }
+        public required string Email { get; set; }
     }
 
 

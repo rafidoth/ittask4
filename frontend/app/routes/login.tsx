@@ -16,6 +16,7 @@ import { useMutation } from "@tanstack/react-query";
 import { AxiosError, isAxiosError } from "axios";
 import { useState } from "react";
 import classes from "./login.module.css";
+import bg from "./background.module.css";
 import { useViewportSize } from "@mantine/hooks";
 import { Link, useNavigate } from "react-router";
 import { login as loginRequest } from "~/api";
@@ -28,7 +29,6 @@ export default function Login() {
   const { login: setAuthUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
 
   const loginMutation = useMutation({
     mutationFn: loginRequest,
@@ -69,7 +69,7 @@ export default function Login() {
     password.length === 0;
 
   return (
-    <Center w={width} h={height}>
+    <Center w={width} h={height} className={bg.background}>
       <Container size={420} my={40}>
         <Title ta="center" className={classes.title}>
           Welcome back!
@@ -84,14 +84,15 @@ export default function Login() {
 
         <Paper
           component="form"
-          withBorder
-          shadow="sm"
+
           p={22}
           mt={30}
           radius="md"
           onSubmit={handleSubmit}
+          bg={"none"}
         >
           <TextInput
+            variant={"filled"}
             label="Email"
             placeholder="you@mail.com"
             required
@@ -100,6 +101,7 @@ export default function Login() {
             onChange={(event) => setEmail(event.currentTarget.value)}
           />
           <PasswordInput
+            variant={"filled"}
             label="Password"
             placeholder="Your password"
             required
@@ -109,14 +111,6 @@ export default function Login() {
             onChange={(event) => setPassword(event.currentTarget.value)}
           />
           <Group justify="space-between" mt="lg">
-            <Checkbox
-              label="Remember me"
-              checked={rememberMe}
-              onChange={(event) => setRememberMe(event.currentTarget.checked)}
-            />
-            <Anchor component="button" size="sm">
-              Forgot password?
-            </Anchor>
           </Group>
           {loginErrorMessage && (
             <Text mt="md" c="red" size="sm">
