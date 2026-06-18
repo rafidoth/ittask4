@@ -11,6 +11,7 @@ namespace ittask4.Application.Service
         Task<ServiceResult<UserListResponseDto>> GetAllUsers();
         Task<ServiceResult<UserActionResponseDto>> BlockUser(UserActionRequestDto dto);
         Task<ServiceResult<UserActionResponseDto>> UnblockUser(UserActionRequestDto dto);
+        Task<ServiceResult<UserActionResponseDto>> CleanUsers(UserActionRequestDto dto);
         Task<ServiceResult<string>> UpdateUserActivity(string UserId);
         Task<ServiceResult<bool>> ActivateUser(string UserId);
         Task<ServiceResult<bool>> ValidateUser(string userId);

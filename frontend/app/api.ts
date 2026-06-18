@@ -68,3 +68,13 @@ export function pushActive(userId?: string): Promise<String> {
   return res.then((res) => res.data)
 }
 
+export function cleanUnverifiedUsers(userIds: string[], userId: string): Promise<UserActionResponse> {
+  const res = axios.post(`${base_url}/users/clean`, {
+    targetUserIds: userIds,
+  }, {
+    headers: {
+      "UserId": userId,
+    },
+  });
+  return res.then((response) => response.data);
+}

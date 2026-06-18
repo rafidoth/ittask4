@@ -9,7 +9,7 @@ import { UserStatus, type User, type UserActionResponse } from "../types";
 import { ActionIcon } from "@mantine/core";
 import { QueryClient, useMutation, useQueryClient, } from "@tanstack/react-query";
 import { useAuth } from "~/auth/AuthProvider";
-import { blockUsers, deleteUsers, unblockUsers } from "~/api";
+import { blockUsers, cleanUnverifiedUsers, deleteUsers, unblockUsers } from "~/api";
 import { notifications } from "@mantine/notifications";
 import type { Dispatch, SetStateAction } from "react";
 
@@ -30,6 +30,9 @@ function useMutationFactory({ actionName, actorUserId, queryClient }: MutationFn
       break;
     case "unblock":
       fn = unblockUsers;
+      break;
+    case "clean":
+      fn = cleanUnverifiedUsers
       break;
   }
   if (!fn) {
@@ -92,6 +95,12 @@ export function UsersTableToolBar({
     queryClient: queryClient
   })
 
+  const cleanUnverifiedUsersMutation = useMutationFactory({
+    actionName: "clean",
+    actorUserId: user?.id || "",
+    queryClient: queryClient
+  })
+
   const TOOLBAR_ICON_SIZE = 16;
   const allSelectedUsersAreAlreadyBlocked = selectedIds.every(
     (id) => data.find((user) => user.id === id)?.status === UserStatus.Blocked,
@@ -143,7 +152,11 @@ export function UsersTableToolBar({
           />
         </ActionIcon>
 
-        <ActionIcon variant="light" size={"lg"} color="red">
+        <ActionIcon variant="light" size={"lg"}
+          disabled={noUsersSelected}
+          color="red"
+          onClick={() => cleanUnverifiedUsersMutation.mutate(selectedIds)}
+        >
           <BroomIcon size={TOOLBAR_ICON_SIZE} />
         </ActionIcon>
       </Flex>

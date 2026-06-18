@@ -139,7 +139,6 @@ public class UsersController : ControllerBase
                 return result.ErrorCode switch
                 {
                     "NOT_FOUND" => NotFound(result.Message),
-                    "USER_BLOCKED" => StatusCode(StatusCodes.Status403Forbidden, result.Message ?? "Sorry, blocked user can't perform this action."),
                     "NO_TARGET_USERS" => BadRequest(result.Message),
                     "INVALID_USER_ID" => BadRequest(result.Message),
                     _ => BadRequest(result.Message)
@@ -268,4 +267,35 @@ public class UsersController : ControllerBase
         return Content(htmlResponse, "text/html");
     }
 
+    [HttpPost("clean")]
+    public async Task<IActionResult> CleanUnverifiedUsers([FromBody] UserActionRequestDto request)
+    {
+        try
+        {
+            var result = await _usersService.CleanUsers(request);
+            if (result == null)
+            {
+                return BadRequest("An error occurred while processing the request.");
+            }
+
+            if (result.IsSuccess)
+            {
+                return Ok(result.Data);
+            }
+            else
+            {
+                return result.ErrorCode switch
+                {
+                    "NOT_FOUND" => NotFound(result.Message),
+                    "NO_TARGET_USERS" => BadRequest(result.Message),
+                    "INVALID_USER_ID" => BadRequest(result.Message),
+                    _ => BadRequest(result.Message)
+                };
+            }
+        }
+        catch (Exception)
+        {
+            return BadRequest("An unexpected error occurred.");
+        }
+    }
 }
