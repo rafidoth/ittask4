@@ -9,7 +9,20 @@ import { useAuth } from "~/auth/AuthProvider";
 import { redirect } from "react-router";
 import { notifications } from "@mantine/notifications";
 import axios from "axios";
+import type { User } from "~/types";
 
+
+function sortUsersByLastSeen(users?: User[]): User[] {
+  if (!users) {
+    return []
+  }
+  const sorted = [...users].sort((a: User, b: User) => {
+    if (!a.lastSeen) return 1;
+    if (!b.lastSeen) return -1;
+    return new Date(b.lastSeen).getTime() - new Date(a.lastSeen).getTime();
+  })
+  return sorted
+}
 
 export function UsersTable() {
   const { user, logout } = useAuth();
@@ -55,7 +68,7 @@ export function UsersTable() {
         setFilter={setFilter}
       />
       <TableSelection
-        data={data?.users || []}
+        data={sortUsersByLastSeen(data?.users) || []}
         selectedIds={selectedIds}
         setSelection={setSelectedIds}
         filter={filter}
