@@ -102,7 +102,15 @@ export function UsersTableToolBar({
   const noUsersSelected = selectedIds.length === 0;
 
   return (
-    <Flex justify={"space-between"}>
+    <Flex justify={{
+      md: "space-between"
+    }} direction={{
+      base: 'column',
+      md: 'row'
+    }}
+      gap={20}
+      p={{ base: 10, md: 0 }}
+    >
       <Flex justify="flex-start" gap="md">
         <Button
           disabled={noUsersSelected || allSelectedUsersAreAlreadyBlocked || blockMutation.isPending}

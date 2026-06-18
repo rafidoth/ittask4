@@ -121,27 +121,29 @@ export function TableSelection({
     });
 
   return (
-    <Table miw={800} verticalSpacing="sm">
-      <Table.Thead>
-        <Table.Tr>
-          <Table.Th w={40} aria-label="Select all rows">
-            <Checkbox
-              onChange={toggleAll}
-              checked={selectedIds.length === data.length}
-              indeterminate={
-                selectedIds.length > 0 && selectedIds.length !== data.length
-              }
-              aria-label="Select all rows"
-            />
-          </Table.Th>
-          {tableHeads.map((th) => (
-            <Table.Th key={th}>
-              {th}
+    <Table.ScrollContainer minWidth={500}>
+      <Table stickyHeader>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th w={40} aria-label="Select all rows">
+              <Checkbox
+                onChange={toggleAll}
+                checked={selectedIds.length === data.length}
+                indeterminate={
+                  selectedIds.length > 0 && selectedIds.length !== data.length
+                }
+                aria-label="Select all rows"
+              />
             </Table.Th>
-          ))}
-        </Table.Tr>
-      </Table.Thead>
-      <Table.Tbody>{rows}</Table.Tbody>
-    </Table>
+            {tableHeads.map((th) => (
+              <Table.Th key={th}>
+                {th}
+              </Table.Th>
+            ))}
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>{rows}</Table.Tbody>
+      </Table>
+    </Table.ScrollContainer>
   );
 }
